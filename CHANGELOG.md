@@ -1,5 +1,60 @@
 # Changelog
 
+## 1.3.4
+
+- Eliminate unnecessary DNS lookups when using SOCKS5 outbound with ACL disabled
+- Add a `lazy_start` option to let the client connect to the server only when there is an incoming connection
+- Fix a bug where TCP redirect didn't work on x86 (32-bit) machines
+- Fix memory leak when using UDP port hopping
+- Updated quic-go to v0.33.0
+
+## 1.3.3
+
+- Fix a bug that made UDP unusable when using `socks5_outbound`
+- Set the default value of `retry_interval` to 1 to prevent the client from retrying too often when errors occur
+- Prompt error if both acme and local cert file are specified in client config
+- Updated quic-go to v0.32.0, performance improvements
+
+## 1.3.2
+
+- Fix a bug where some malformed UDP packets would cause the server to crash
+- Fix a bug where the server did not have a timeout for SOCKS5 outbound connections
+- Add build variants: amd64-avx, armv5, mipsle-sf, windows/arm64
+
+## 1.3.1
+
+- New `fast_open` option for client to reduce RTT when dialing TCP connections
+- Fix a bug where the HTTP proxy would not close connections properly
+- Minor performance improvements here and there
+
+## 1.3.0
+
+- Connection migration: clients can now seamlessly switch between networks without losing their connection to the server
+- Dynamic port hopping: see https://hysteria.network/docs/port-hopping/ for more information
+
+## 1.2.2
+
+- Fix a bug where the client would crash for IPv6 UDP requests in TProxy mode.
+- Fix a bug where the client did not release old UDP sockets when reconnecting.
+- Fix a bug where using DoT (DNS over TLS) as resolver would cause the client/server to crash.
+- Add `quit_on_disconnect`, `handshake_timeout`, `idle_timeout` options to client config.
+- Drop server's legacy protocol (v2) support.
+- Updated quic-go to v0.30.0, small performance improvements.
+
+## 1.2.1
+
+- Fix a bug that caused DNS failure when using domain names in the "resolver" option
+- Fix a bug where errors in HTTP proxy mode were not logged
+- Fix a bug where WeChat protocol was not working properly when obfuscation was not enabled
+- New TCP buffer options for tun mode (`tcp_sndbuf`, `tcp_rcvbuf`, `tcp_autotuning`)
+
+## 1.2.0
+
+- Reworked TUN mode
+- DoT/DoH/DoQ support for resolver
+- IP masking (anonymization)
+- FreeBSD builds
+
 ## 1.1.0
 
 - Super major CPU performance improvements (~30% to several times faster, depending on the circumstances) by optimizing several data structures in quic-go (changes upstreamed)

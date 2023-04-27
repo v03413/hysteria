@@ -1,4 +1,4 @@
-FROM golang:alpine AS builder
+FROM golang:1-alpine AS builder
 
 LABEL maintainer="mritd <mritd@linux.com>"
 
@@ -9,19 +9,14 @@ ARG GOPROXY=""
 
 ENV GOPROXY ${GOPROXY}
 
-COPY . /go/src/github.com/hynetwork/hysteria
+COPY . /go/src/github.com/apernet/hysteria
 
-WORKDIR /go/src/github.com/hynetwork/hysteria/cmd
+WORKDIR /go/src/github.com/apernet/hysteria
 
 RUN set -ex \
-    && apk add git build-base \
-    && export VERSION=$(git describe --tags) \
-    && export COMMIT=$(git rev-parse HEAD) \
-    && export TIMESTAMP=$(date "+%F %T") \
-    && go build -trimpath -o /go/bin/hysteria -ldflags \
-        "-w -s -X 'main.appVersion=${VERSION}' \
-        -X 'main.appCommit=${COMMIT}' \
-        -X 'main.appDate=${TIMESTAMP}'"
+    && apk add git build-base bash \
+    && ./build.sh \
+    && mv ./build/hysteria-* /go/bin/hysteria
 
 # multi-stage builds to create the final image
 FROM alpine AS dist
@@ -31,7 +26,7 @@ LABEL maintainer="mritd <mritd@linux.com>"
 # set up nsswitch.conf for Go's "netgo" implementation
 # - https://github.com/golang/go/blob/go1.9.1/src/net/conf.go#L194-L275
 # - docker run --rm debian:stretch grep '^hosts:' /etc/nsswitch.conf
-RUN [ ! -e /etc/nsswitch.conf ] && echo 'hosts: files dns' > /etc/nsswitch.conf
+RUN if [ ! -e /etc/nsswitch.conf ]; then echo 'hosts: files dns' > /etc/nsswitch.conf; fi
 
 # bash is used for debugging, tzdata is used to add timezone information.
 # Install ca-certificates to ensure no CA certificate errors.
